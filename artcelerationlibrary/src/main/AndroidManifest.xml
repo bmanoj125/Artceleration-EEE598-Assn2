@@ -13,7 +13,8 @@
         <service
             android:name=".TransformService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:isolatedProcess="true"></service>
     </application>
 
 </manifest>

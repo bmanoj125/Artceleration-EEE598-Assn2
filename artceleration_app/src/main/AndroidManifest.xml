@@ -11,11 +11,6 @@
         <activity android:name=".MainViewer">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <service android:enabled = "true"
-                    android:exported = "true"
-                    android:isolateProcess = "true"
-                    android:name = "ArtTransformService">
-                </service>
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

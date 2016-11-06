@@ -10,6 +10,7 @@ import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 
 public class TransformService extends Service {
@@ -29,7 +30,7 @@ public class TransformService extends Service {
                 case Transform_TWO:
                     Bundle dataBundle = mesg.getData();
                     ParcelFileDescriptor pfd = (ParcelFileDescriptor)dataBundle.get("pfd");
-                    FileInputStream fios = new FileInputStream(pfd);
+                    FileInputStream fios = new FileInputStream(pfd.getFileDescriptor());
                     int result = mesg.arg1 * mesg.arg2;
                     Log.d(TAG, "Transform_TWO");
                     break;

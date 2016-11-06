@@ -65,8 +65,8 @@ public class ArtLib {
         this.artlistener=artlistener;
     }
 
-    public boolean requestTransform(Bitmap img, int index, int[] intArgs, float[] floatArgs){
-        try{
+    public boolean requestTransform(Bitmap img, int index, int[] intArgs, float[] floatArgs) {
+        try {
             MemoryFile memFile = new MemoryFile("memKey", 137);
             ParcelFileDescriptor pfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
 
@@ -74,18 +74,16 @@ public class ArtLib {
 //            int what = TransformService.Transform_TWO;
             Bundle dataBundle = new Bundle();
             dataBundle.putParcelable("pfd", pfd);
-            Message msg = Message.obtain(null,what,2,3);
+            Message msg = Message.obtain(null, what, 2, 3);
             msg.setData(dataBundle);
-            try{
+            try {
                 myMessenger.send(msg);
-            } catch(RemoteException e) {
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-
-            return true;
         }
+        return true;
     }
-
 }
