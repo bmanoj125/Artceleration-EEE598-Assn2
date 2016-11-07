@@ -19,10 +19,13 @@ public class TransformService extends Service {
     String TAG = "Service_TAG";
     static final int Transform_ONE = 1;
     static final int Transform_TWO = 2;
+    // Handler to choose the transform to apply based on value sent from library.
+    // This can spawn off threads to do the actual work.
     class TransformHandler extends Handler {
         @Override
         public void handleMessage(Message mesg) {
             Log.d(TAG, "handleMessage(msg)" + mesg.what);
+            // Using a Switch-case to select the right transform
             switch(mesg.what){
                 case Transform_ONE:
                     Log.d(TAG, "Transform_ONE");
