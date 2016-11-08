@@ -35,7 +35,7 @@ public class TransformService extends Service {
                     ParcelFileDescriptor pfd = (ParcelFileDescriptor)dataBundle.get("pfd");
                     FileInputStream fios = new FileInputStream(pfd.getFileDescriptor());
                     int result = mesg.arg1 * mesg.arg2;
-                    Log.d(TAG, "Transform_TWO");
+                    Log.d(TAG, "Transform_TWO" + result);
                     break;
                 default:
                     Log.d(TAG, "Default");

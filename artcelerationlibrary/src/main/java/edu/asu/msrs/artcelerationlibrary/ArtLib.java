@@ -72,7 +72,7 @@ public class ArtLib {
     // It is a non blocking, so it returns true if the request was successfully made. A new request can be placed before the old one has completed.
     public boolean requestTransform(Bitmap img, int index, int[] intArgs, float[] floatArgs) {
         try {
-            MemoryFile memFile = new MemoryFile("memKey", 137);
+            MemoryFile memFile = new MemoryFile("memKey", 30);
             ParcelFileDescriptor pfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
 
             int what = TransformService.Transform_ONE;
