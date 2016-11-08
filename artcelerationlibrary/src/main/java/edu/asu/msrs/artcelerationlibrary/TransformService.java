@@ -146,6 +146,7 @@ public class TransformService extends Service {
                 case Transform_TWO:
                     // Do a garbage transformation. Here the function increments each element by 1.
                     Log.d(TAG, "Perform Transform_TWO");
+                    //Sleep to test the in order queueing
                     try {
                         sleep(10000);
                     } catch (InterruptedException e) {
@@ -171,6 +172,7 @@ public class TransformService extends Service {
                 memFile.writeBytes(outbA,0,0,outbA.length);
                 Outpfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
                 outdataBundle.putParcelable("Outpfd", Outpfd);
+                //Create the output message
                 outmsg = Message.obtain(null, 1);
                 outmsg.setData(outdataBundle);
             } catch (IOException e) {
