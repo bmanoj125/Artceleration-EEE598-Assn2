@@ -100,8 +100,7 @@ public class ArtLib {
             Log.d("Library Input", input);
             ParcelFileDescriptor pfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
 
-//            int what = index;
-            int what = TransformService.Transform_TWO;
+            int what = index;
 
             // Making data parcelable to be sent across to service
             Bundle dataBundle = new Bundle();
