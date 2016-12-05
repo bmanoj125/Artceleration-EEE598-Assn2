@@ -47,6 +47,7 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
     uint32_t *q_vector, *q_vec_iterator;
     double gray_value;
     int sum_x, sum_y;
+    int sum_xr,sum_xg,sum_xb;
 
 
 
@@ -77,10 +78,11 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
 
             //Assign the gray scale value to the input
             // Fuse the three channel assign it to the pixel value;
-            input_line[y_iterator*total_width+ x_iterator] =
+            input_line[y_iterator*total_width+x_iterator] = (int)gray_value;
+            /*input_line[y_iterator*total_width+ x_iterator] =
                     (((int)gray_value << 16) & 0x00FF0000) |
                     (((int)gray_value << 8) & 0x0000FF00) |
-                    ((int)gray_value & 0x000000FF);
+                    ((int)gray_value & 0x000000FF);*/
 
 
         }
@@ -95,10 +97,45 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
         input_line = (uint32_t *) pixels;
 
         case 0:
-            for (y_iterator = 0; y_iterator < total_height; y_iterator++) {
-                for (x_iterator = 0; x_iterator < total_width; x_iterator++){
+            for (y_iterator = 1; y_iterator < total_height-1; y_iterator++) {
+                for (x_iterator = 1; x_iterator < total_width-1; x_iterator++){
+                    int g1=0,g2=0,g3=0,g4=0,g5=0,g6=0,g7=0,g8=0,g9=0;
+                    /*
+                    if(y_iterator ==0 && x_iterator == 0){
+                        g1 = 0; g2 =0;g3 =0;g4=0;g7=0;
+                        g5 = input_line[x_iterator]*Sx_mask[1][1];
+                        g6 = input_line[x_iterator]*Sx_mask[1][2];
+                        g8 = input_line[x_iterator]*Sx_mask[2][1];
+                        g9 = input_line[x_iterator]*Sx_mask[2][2];
+
+                    }else if(y_iterator==0){
+                        g2 = 0;g1 =0;g3=0;
+                        g4 = input_line[x_iterator]*Sx_mask[1][0];
+                        g6 = input_line[x_iterator]*Sx_mask[1][2];
+                        g8 = input_line[x_iterator]*Sx_mask[2][1];
+                        g9 = input_line[x_iterator]*Sx_mask[2][2];
+                        g5 = input_line[x_iterator]*Sx_mask[1][1];
+                        g6 = input_line[x_iterator]*Sx_mask[1][2];
+                        g7 = input_line[x_iterator]*Sx_mask[2][0];
+                        g8 = input_line[x_iterator]*Sx_mask[2][1];
+                        g9 = input_line[x_iterator]*Sx_mask[2][2];
+                    } else if
+                    */
+                    g1 = input_line[(y_iterator-1)*total_width+ x_iterator-1]*Sx_mask[0][0];
+                    g2 = input_line[(y_iterator-1)*total_width+ x_iterator]*Sx_mask[0][1];
+                    g3 = input_line[(y_iterator-1)*total_width+ x_iterator+1]*Sx_mask[0][2];
+                    g4 = input_line[y_iterator*total_width+ x_iterator-1]*Sx_mask[1][0];
+                    g5 = input_line[y_iterator*total_width+ x_iterator]*Sx_mask[1][1];
+                    g6 = input_line[y_iterator*total_width+ x_iterator+1]*Sx_mask[1][2];
+                    g7 = input_line[(y_iterator+1)*total_width+ x_iterator-1]*Sx_mask[2][0];
+                    g8 = input_line[(y_iterator+1)*total_width+ x_iterator]*Sx_mask[2][1];
+                    g9 = input_line[(y_iterator+1)*total_width+ x_iterator+1]*Sx_mask[2][2];
+
+                    sum_x = g1+g2+g3+g4+g5+g6+g7+g8+g9;
+                     /*
                     //Iterate through the input_line
                    sum_x =0;
+                    uint32_t final_value;
                    for(int i= -1; i<2;i++){
                        for(int j=-1; j<2;j++){
 
@@ -106,16 +143,28 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                            if((y_iterator+j) <0 || (y_iterator+j>=total_height)|| (x_iterator+i)<0 || (x_iterator+i)>=total_width){
                                continue;
                            }
-                           //Compute the sum of the pixels with the Y mask
-                           sum_x +=input_line[((y_iterator+j)*total_width)+x_iterator+i]*Sx_mask[i][j];
+
+                           //gray_value = ((input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x00FF0000)>>16) | ((input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x0000FF00)>>8) | ((input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x000000FF));
+                           //Compute the sum of the pixels with the X mask
+
+                           sum_xr +=((input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x00FF0000)>>16 )*Sx_mask[1+i][1+j];
+                           sum_xg +=((input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x0000FF00)>>8 )*Sx_mask[1+i][1+j];
+                           sum_xb +=(input_line[((y_iterator+j)*total_width)+x_iterator+i] & 0x000000FF)*Sx_mask[1+i][1+j];
+
+
+                           sum_x += (input_line[((y_iterator+j)*total_width)+x_iterator+i]& 0x000000FF)*Sx_mask[1+i][1+j];
                        }
-                   }
+                   }*/
+                    /*
+                    final_value = (((uint32_t) sum_x << 16) & 0x00FF0000) |
+                                  (((uint32_t)sum_x << 8) & 0x0000FF00) |
+                                  ((uint32_t)sum_x & 0x000000FF);*/
 
                     //Insert the updated value into the pixel
-                    input_line[y_iterator*total_width+ x_iterator] = sum_x;
-                           /* (((int)sum_x << 16) & 0x00FF0000) |
-                            (((int)sum_x << 8) & 0x0000FF00) |
-                            ((int)sum_x & 0x000000FF);*/
+                    //input_line[y_iterator*total_width+ x_iterator] = sum_x;
+                    input_line[y_iterator*total_width+ x_iterator] = (((int)sum_x << 16) & 0x00FF0000) |
+                                                      (((int)sum_x << 8) & 0x0000FF00) |
+                                                      ((int)sum_x & 0x000000FF);
 
                 }
             }
@@ -134,7 +183,7 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                                 continue;
                             }
                             //Compute the sum of the pixels with the Y mask
-                            sum_y +=input_line[((y_iterator+j)*total_width)+x_iterator+i]*Sy_mask[i][j];
+                            sum_y +=input_line[((y_iterator+j)*total_width)+x_iterator+i]*Sy_mask[1+i][1+j];
                         }
                     }
                     //Insert the updated value into the pixel
@@ -159,10 +208,10 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                                 continue;
                             }
                             //Compute the sum of the pixels with the X mask
-                            sum_x +=input_line[((y_iterator+i)*total_width)+x_iterator+j]*Sx_mask[i][j];
+                            sum_x +=input_line[((y_iterator+i)*total_width)+x_iterator+j]*Sx_mask[1+i][1+j];
 
                             //Compute the sum of the pixels with the Y mask
-                            sum_y +=input_line[((y_iterator+i)*total_width)+x_iterator+j]*Sy_mask[i][j];
+                            sum_y +=input_line[((y_iterator+i)*total_width)+x_iterator+j]*Sy_mask[1+i][1+j];
                         }
                     }
                     //Insert the updated value into the pixel
