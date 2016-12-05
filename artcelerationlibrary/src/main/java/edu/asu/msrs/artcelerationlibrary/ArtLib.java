@@ -42,6 +42,13 @@ public class ArtLib {
     private Messenger myMessenger;
     private boolean Bound;
 
+    //Define Finals for Image Transform indices
+    static final int MOTION_BLUR = 0;
+    static final int GAUSSIAN_BLUR = 1;
+    static final int SOBEL_FILTER =2;
+    static final int UNSHARP_MASK =3;
+    static final int NEON_EDGES = 4;
+    static final String[] transforms = {"Motion Blur","Gaussian Blur", "Sobel Filter", "Unsharp Mask", "Neon edges"};
 
     // Handler to start a connection and close a connection between library and service.
     ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -66,17 +73,18 @@ public class ArtLib {
     }
 
     // This array contains the list of transforms that the library supports. Also used to populate the drop down on the UI.
-    public String[] getTransformsArray() {
-        String[] transforms = {"Gaussian Blur", "Neon edges", "Color Filter"};
+    public String[] getTransformsArray() {;
         return transforms;
     }
 
     //
     public TransformTest[] getTestsArray() {
-        TransformTest[] transforms = new TransformTest[3];
-        transforms[0] = new TransformTest(0, new int[]{1, 2, 3}, new float[]{0.1f, 0.2f, 0.3f});
-        transforms[1] = new TransformTest(1, new int[]{11, 22, 33}, new float[]{0.3f, 0.2f, 0.3f});
-        transforms[2] = new TransformTest(2, new int[]{51, 42, 33}, new float[]{0.5f, 0.6f, 0.3f});
+        TransformTest[] transforms = new TransformTest[5];
+        transforms[0] = new TransformTest(0, new int[]{1,10}, new float[]{});
+        transforms[1] = new TransformTest(1, new int[]{50}, new float[]{5.0f});
+        transforms[2] = new TransformTest(2, new int[]{0}, new float[]{});
+        transforms[3] =  new TransformTest(3, new int[]{51, 42, 33}, new float[]{0.5f, 0.6f, 0.3f});
+        transforms[4] = new TransformTest(4, new int[]{51, 42, 33}, new float[]{0.5f, 0.6f, 0.3f});
 
         return transforms;
     }
@@ -89,36 +97,47 @@ public class ArtLib {
     // It is non blocking, so it returns true if the request was successfully made. A new request can be placed before the old one has completed.
     public boolean requestTransform(Bitmap img, int index, int[] intArgs, float[] floatArgs) {
         try {
+            //Do Argument Checking first
+            if(!Argument_checks(index,intArgs,floatArgs)){
+                return false;
+            }
+
             // Convert the bitmap image to byteArray
+            Log.d("Library","Requesting transform index "+index);
             ByteArrayOutputStream bAos = new ByteArrayOutputStream();
-            img.compress(Bitmap.CompressFormat.PNG, 0, bAos);
+            img.compress(Bitmap.CompressFormat.PNG, 100, bAos);
             byte[] bA = bAos.toByteArray();
             // Create a memoryFile of size of the input  or now the byteArray.
             MemoryFile memFile = new MemoryFile("imgKey", bA.length);
             memFile.writeBytes(bA, 0, 0, bA.length);
-            String input = Arrays.toString(bA);
-            Log.d("Library Input", input);
             ParcelFileDescriptor pfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
 
             int what = index;
-
             // Making data parcelable to be sent across to service
             Bundle dataBundle = new Bundle();
             dataBundle.putParcelable("pfd", pfd);
+
+            dataBundle.putIntArray("Int_Args", intArgs);
+            dataBundle.putFloatArray("Float_Args", floatArgs);
+
+
             // Build the message to send to Service.
             Message msg = Message.obtain(null, what);
             // Payload of the message
             msg.setData(dataBundle);
             // Tell Service to reply on this Messenger.
             msg.replyTo = ServiceMessenger;
+
             try {
-                myMessenger.send(msg);          // Send message to service.
+                myMessenger.send(msg);          // Send message to service.myMessenger.send(msg);          // Send message to service.
                 memFile.close();                // Close to memory File before finalize().
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
         } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         return true;                            // Return to user to allow new requests.
@@ -129,13 +148,14 @@ public class ArtLib {
         @Override
         public void handleMessage(Message mesg) {
             // Unpack the data. Similar to what we do on the Service side when Library sent it a message.
-            Log.d("Library Response", "handleMessage(msg)" + mesg.what);
+            Log.d("Library Response", "Completed " + transforms[mesg.what]+" Transform!" );
             Bundle dataBundle = mesg.getData();
             ParcelFileDescriptor pfd = (ParcelFileDescriptor) dataBundle.get("Outpfd");
             //Convert the data bundle obtained into a byte array.
             InputStream is = new FileInputStream(pfd.getFileDescriptor());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             int bytesRead;
+
             byte[] out = new byte[16384];
 
             try {
@@ -153,9 +173,66 @@ public class ArtLib {
 
             // Decode the byteArray back into a bitmap to be displayed.
             Bitmap bitmap = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.size());
-            // Convert the byteArray to a string for easy viewability.
-            String temp = Arrays.toString(baos.toByteArray());
-            Log.d("LibraryResponse", temp);
+
+            //Send Processed bitmap back to the UI thread
+            artlistener.onTransformProcessed(bitmap);
+
         }
+    }
+
+    boolean Argument_checks(int index, int int_Args[], float float_Args[]){
+        //Check limits of the index
+        String TAG = "Invalid input:";
+        if(index >4 || index <0){
+            Log.e(TAG, "Index of Filter should be between 0 to 4");
+                    return false;
+        }
+
+        switch (index){
+
+            case MOTION_BLUR :
+                //Check Arguments for motion blur
+                if(int_Args == null){
+                    Log.e(TAG,"Motion Blur - Int Args is null");
+                    return false;
+                }
+                if(int_Args[0] < 0  || int_Args[0] > 1 || int_Args[1] <0) {
+                    Log.e(TAG,"Motion Blur - Provide the radius greater than 0  and blur direction as 0 or 1");
+                    return false;
+                }
+                break;
+            case GAUSSIAN_BLUR :
+                //Check Arguments for Gaussian Blur
+                if(int_Args[0]< 0  || float_Args[0] <0) {
+                    Log.e(TAG, "Gaussian Blur - The radius and standard deviation should be greater than 0");
+                    return false;
+                }
+                break;
+            case SOBEL_FILTER :
+                //Check Arguments for Sobel Filter
+                if(int_Args[0]< 0 ||int_Args[0]>2){
+                    Log.e(TAG, "Sobel Filter - a0 should be within 0 and 2 inclusive.");
+                    return false;
+                }
+                break;
+            case UNSHARP_MASK :
+                // Call the Unsharp Mask transform
+                if(float_Args[0]<0||float_Args[1]<0) {
+                    Log.e(TAG, "Unsharp Mask - The scaling factor and standard deviation should be greater than 0");
+                    return false;
+                }
+                break;
+            case NEON_EDGES:
+                if(float_Args[0]<0|| float_Args[1]<0 || float_Args[2]<0) {
+                    Log.e(TAG, "Neon Edges - The scaling factors and standard deviation should be greater than 0");
+                    return false;
+                }
+                break;
+
+        }
+
+        return true;
+
+
     }
 }
