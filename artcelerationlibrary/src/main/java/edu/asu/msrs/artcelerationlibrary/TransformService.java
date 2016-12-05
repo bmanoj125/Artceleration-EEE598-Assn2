@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,30 +25,46 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 public class TransformService extends Service {
+
+    //Load the NDK libraries
+    static {
+        System.loadLibrary("AllFilters-lib");
+    }
+
     public TransformService() {
     }
     String TAG = "Service_TAG";
     int ticket_to_execute = 0, ticket_allotted = 0;
     private Object Lock1 = new Object();
-    static final int Transform_ONE = 0;
-    static final int Transform_TWO = 1;
-    static final int Transform_THREE =2;
+
+    //Define Finals for Image Transform indices
+    static final int MOTION_BLUR = 0;
+    static final int GAUSSIAN_BLUR = 1;
+    static final int SOBEL_FILTER =2;
+    static final int UNSHARP_MASK =3;
+    static final int NEON_EDGES = 4;
+
     // Messenger to receive the message from the Library.
     final Messenger ServiceMessenger = new Messenger (new TransformHandler());
     // Messenger to send the message to the Library.
     private Messenger ClientMessenger ;
+
+    //Declare transforms with the keyword Native to link it to respective JNI call
+    public native void Motion_Blur(Bitmap img, int[] intArgs);
+    public native void Gaussian_Blur(Bitmap img, int[] intArgs, float[] floatArgs);
+    public native void Sobel_Filter(Bitmap img, int[] intArgs);
 
     // Handler to choose the transform to apply based on value sent from library.
     // This can spawn off threads to do the actual work.
     class TransformHandler extends Handler {
         @Override
         public void handleMessage(Message mesg) {
-            Log.d(TAG, "handleMessage(msg)" + mesg.what);
 
 
             // Obtain the messenger handler from the message.
             ClientMessenger = mesg.replyTo;
             // Get the data bundle as received from the service.
+
             Bundle dataBundle = mesg.getData();
             ParcelFileDescriptor pfd = (ParcelFileDescriptor)dataBundle.get("pfd");
             // Convert the bundle into a byteArray.
@@ -70,19 +87,12 @@ public class TransformService extends Service {
             }
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.size());
-            // Convert the outputStream to String for easy printing/viewing on log.
-            String temp = Arrays.toString(baos.toByteArray());
-            Log.d("Service Output",temp);
-            // Converting to byteArray.
-            ByteArrayOutputStream outbAos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG,0,outbAos);
-            byte[] outbA = outbAos.toByteArray();
 
 
             ThreadTask t1;
             synchronized (Lock1) {
                 //Pass the new thread with the parameters of the allotted ticket number, the byte Array and the transform number
-                t1 = new ThreadTask(ticket_allotted,outbA, mesg.what);
+                t1 = new ThreadTask(ticket_allotted,bitmap, mesg.what,dataBundle.getIntArray("Int_Args"), dataBundle.getFloatArray("Float_Args"));
                 ticket_allotted++;
             }
 
@@ -91,29 +101,8 @@ public class TransformService extends Service {
             t1.run();
             return;
 
-        }
-    }
 
-    // A simple function that "transforms" the input image.
-    public byte[] transformImg1(byte[] In){
-        for( int i=0; i < In.length;i++){
-            In[i]--;
         }
-        return In;
-    }
-
-    public byte[] transformImg2(byte[] In){
-        for( int i=0; i < In.length;i++){
-            In[i]++;
-        }
-        return In;
-    }
-
-    public byte[] transformImg3(byte[] In){
-        for( int i=0; i < In.length;i++){
-            In[i]=0;
-        }
-        return In;
     }
 
 
@@ -124,45 +113,61 @@ public class TransformService extends Service {
 
     class ThreadTask extends Thread{
         private int my_ticket;
-        private byte[] outbA;
+        private Bitmap bmp;
         private int transformation;
+        private int intArgs[];
+        private float floatArgs[];
 
         private Message outmsg;
-        ThreadTask(int a, byte[] bA, int transformation){
+        ThreadTask(int a, Bitmap bmp, int transformation, int intArgs[], float floatArgs[]){
             this.my_ticket = a;
-            this.outbA = bA;
+            this.bmp = bmp;
             this.transformation = transformation;
+            this.intArgs = intArgs;
+            this.floatArgs = floatArgs;
         }
         @Override
         public void run() {
 
-            // Using a Switch-case to select the right transform or action to perform. For now hardcoded.
+            // Using a Switch-case to select the right transformation
             switch(transformation){
-                case Transform_ONE:
-                    // Do a garbage transformation. Here the function decrements each element by 1.
-                    Log.d(TAG, "Perform Transform_ONE");
-                    outbA= transformImg1(outbA);
+                case MOTION_BLUR :
+                    // Call the Motion Blur transform
+                    Log.i(TAG, "Perform Motion Blur");
+                    Motion_Blur(bmp, intArgs);
+
                     break;
-                case Transform_TWO:
-                    // Do a garbage transformation. Here the function increments each element by 1.
-                    Log.d(TAG, "Perform Transform_TWO");
-                    //Sleep to test the in order queueing
-                    try {
-                        sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                case GAUSSIAN_BLUR :
+                    // Call the Gaussian Blur transform
+                    Log.i(TAG, "Perform Gaussian Blur");
+                    if(bmp==null|| intArgs==null || floatArgs==null){
+                        bmp = change_black(bmp);
+                        return;
                     }
-                    outbA= transformImg2(outbA);
+                    Gaussian_Blur(bmp, intArgs, floatArgs);
                     break;
-                case Transform_THREE:
-                    // Do a garbage transformation. Here the function sets each element to 0.
-                    Log.d(TAG, "Perform Transform_THREE");
-                    outbA=transformImg3(outbA);
+                case SOBEL_FILTER :
+                    // Call the Sobel Filter transform
+                    Log.d(TAG, "Perform Sobel Filter");
+                    Sobel_Filter(bmp,intArgs);
+                    break;
+                case UNSHARP_MASK :
+                    // Call the Unsharp Mask transform
+                    Log.d(TAG, "Perform Unsharp Mask");
+                    break;
+                case NEON_EDGES:
+                    // Call the Neon Edges transform
+                    Log.d(TAG, "Perform Neon Edges");
                     break;
                 default:
                     Log.d(TAG, "Default");
                     return;
             }
+
+            // Converting to byteArray.
+            ByteArrayOutputStream outbAos = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG,100,outbAos);
+            byte[] outbA = outbAos.toByteArray();
             // Prepare a memoryFile to send the message back to the Library.
             MemoryFile memFile = null;
             Bundle outdataBundle = new Bundle();
@@ -173,17 +178,13 @@ public class TransformService extends Service {
                 Outpfd = MemoryFileUtil.getParcelFileDescriptor(memFile);
                 outdataBundle.putParcelable("Outpfd", Outpfd);
                 //Create the output message
-                outmsg = Message.obtain(null, 1);
+                outmsg = Message.obtain(null, transformation);
                 outmsg.setData(outdataBundle);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
-
-            // Print this "Transformed" byteArray.
-            String TfrbA = Arrays.toString(outbA);
-            Log.d("Service Response",TfrbA);
             while (true) {
                 synchronized (Lock1) {
                     if (my_ticket == ticket_to_execute)
@@ -198,7 +199,7 @@ public class TransformService extends Service {
                 }
             }
 
-            // Remember to use the messenger created just for send.
+            // Use the messenger created just for send.
 
             try {
                 ClientMessenger.send(outmsg);
@@ -217,6 +218,25 @@ public class TransformService extends Service {
 
             }
         }
+
+    Bitmap change_black(Bitmap bmp){
+
+        int [] allpixels = new int [bmp.getHeight()*bmp.getWidth()];
+        bmp.getPixels(allpixels,0,bmp.getWidth(),0,0,bmp.getWidth(),bmp.getHeight());
+
+        //Manipulate all the background black pixels in the image to transparent by making the A value in ARGB to 0
+
+        for(int i = 0; i<allpixels.length;i++){
+            //if(allpixels[i] == Color.BLACK)
+                //For all black pixels, convert their opacity to 0
+                allpixels[i] =Color.RED;
+        }
+        bmp = Bitmap.createBitmap(allpixels,bmp.getWidth(),bmp.getHeight(), Bitmap.Config.ARGB_8888 );
+
+        return  bmp;
+    }
+
+
 }
 
 
