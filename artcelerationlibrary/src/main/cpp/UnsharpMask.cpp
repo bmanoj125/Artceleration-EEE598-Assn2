@@ -53,6 +53,11 @@ void Unsharp_Mask(AndroidBitmapInfo* bmp_info, void* pixels, float float_array[]
                 green = scaling_factor*((((original_img[index] & 0x0000FF00) >> 8)-((input_line[index] & 0x0000FF00) >> 8)));
                 blue = scaling_factor*((((original_img[index] & 0x000000FF)) - ((input_line[index] & 0x000000FF))));
 
+            //Limit the intensities to within 0 and 255
+            red = intensity_limit(red);
+            green = intensity_limit(green);
+            blue = intensity_limit(blue);
+
 
                 //Add this value to the original image
                 red += ((original_img[index] & 0x00FF0000) >> 16);
