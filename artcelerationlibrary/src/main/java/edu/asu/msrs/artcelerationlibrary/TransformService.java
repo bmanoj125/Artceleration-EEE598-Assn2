@@ -53,7 +53,7 @@ public class TransformService extends Service {
     public native void Motion_Blur(Bitmap img, int[] intArgs);
     public native void Gaussian_Blur(Bitmap img, int[] intArgs, float[] floatArgs);
     public native void Sobel_Filter(Bitmap img, int[] intArgs);
-
+    public native void Unsharp_Mask(Bitmap img, float[] floatArgs);
     // Handler to choose the transform to apply based on value sent from library.
     // This can spawn off threads to do the actual work.
     class TransformHandler extends Handler {
@@ -154,6 +154,7 @@ public class TransformService extends Service {
                 case UNSHARP_MASK :
                     // Call the Unsharp Mask transform
                     Log.d(TAG, "Perform Unsharp Mask");
+                    Unsharp_Mask(bmp,floatArgs);
                     break;
                 case NEON_EDGES:
                     // Call the Neon Edges transform

@@ -17,6 +17,7 @@ add_library( # Specifies the name of the library.
              src/main/cpp/MotionBlur.cpp
              src/main/cpp/GaussianBlur.cpp
              src/main/cpp/SobelFilter.cpp
+             src/main/cpp/UnsharpMask.cpp
              src/main/cpp/AllImageTransforms.cpp)
 
 
