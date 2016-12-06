@@ -23,6 +23,8 @@ void Motion_Blur(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[])
 void Gaussian_Blur(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[], float float_array[]);
 void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]);
 void Unsharp_Mask(AndroidBitmapInfo* bmp_info, void *pixels, float float_array[]);
+void Neon_Edges(AndroidBitmapInfo* bmp_info, void *pixels, float float_array[]);
+
 
 
 //Function to limit the intensity between 0 to 255

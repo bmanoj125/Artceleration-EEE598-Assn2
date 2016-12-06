@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include "FilterHeaders.h"
 #include <math.h>
+
 extern void Gaussian_Blur(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[], float float_array[]);
 
 void Unsharp_Mask(AndroidBitmapInfo* bmp_info, void* pixels, float float_array[]){

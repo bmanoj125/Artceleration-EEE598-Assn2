@@ -155,4 +155,38 @@ JNIEXPORT void JNICALL Java_edu_asu_msrs_artcelerationlibrary_TransformService_U
     AndroidBitmap_unlockPixels(env, inp_bitmap);
     env->ReleaseFloatArrayElements(float_array,float_args,0);
 }
+
+
+//Call mapping to Neon Edges
+JNIEXPORT void JNICALL Java_edu_asu_msrs_artcelerationlibrary_TransformService_Neon_1Edges(JNIEnv * env, jobject  obj, jobject inp_bitmap,jfloatArray float_array)
+{
+    AndroidBitmapInfo  info;
+    int ret;
+    void *pixels;
+
+
+    //Get info from the bitmap to the info struct
+    ret = AndroidBitmap_getInfo(env, inp_bitmap, &info);
+    if (ret < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return;
+    }
+
+    //Lock the memory for the pixels
+    ret = AndroidBitmap_lockPixels(env, inp_bitmap, &pixels);
+    if (ret < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return;
+    }
+
+    //Lock memory of the arguments
+    jfloat *float_args = env->GetFloatArrayElements(float_array,NULL);
+
+    //Perform Neon Edges
+    Neon_Edges(&info, pixels, float_args);
+
+    //Unlock the memory after completing the transform
+    AndroidBitmap_unlockPixels(env, inp_bitmap);
+    env->ReleaseFloatArrayElements(float_array,float_args,0);
+}
 }

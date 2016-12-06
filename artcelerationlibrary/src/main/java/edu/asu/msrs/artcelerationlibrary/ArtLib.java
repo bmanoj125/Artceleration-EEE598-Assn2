@@ -84,7 +84,7 @@ public class ArtLib {
         transforms[1] = new TransformTest(1, new int[]{50}, new float[]{5.0f});
         transforms[2] = new TransformTest(2, new int[]{2}, new float[]{});
         transforms[3] =  new TransformTest(3, new int[]{}, new float[]{3f, 5f});
-        transforms[4] = new TransformTest(4, new int[]{51, 42, 33}, new float[]{0.5f, 0.6f, 0.3f});
+        transforms[4] = new TransformTest(4, new int[]{51, 42, 33}, new float[]{3f,3.5f,0.25f});
 
         return transforms;
     }

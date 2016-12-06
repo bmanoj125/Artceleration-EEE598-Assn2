@@ -54,6 +54,7 @@ public class TransformService extends Service {
     public native void Gaussian_Blur(Bitmap img, int[] intArgs, float[] floatArgs);
     public native void Sobel_Filter(Bitmap img, int[] intArgs);
     public native void Unsharp_Mask(Bitmap img, float[] floatArgs);
+    public native void Neon_Edges(Bitmap img, float[] floatArgs);
     // Handler to choose the transform to apply based on value sent from library.
     // This can spawn off threads to do the actual work.
     class TransformHandler extends Handler {
@@ -159,6 +160,7 @@ public class TransformService extends Service {
                 case NEON_EDGES:
                     // Call the Neon Edges transform
                     Log.d(TAG, "Perform Neon Edges");
+                    Neon_Edges(bmp,floatArgs);
                     break;
                 default:
                     Log.d(TAG, "Default");
@@ -192,9 +194,9 @@ public class TransformService extends Service {
                         //Break if its my turn to execute
                         break;
                 }
-                //Sleep for 10 milliseconds if its not my turn to execute
+                //Sleep for 2 milliseconds if its not my turn to execute
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(2);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
