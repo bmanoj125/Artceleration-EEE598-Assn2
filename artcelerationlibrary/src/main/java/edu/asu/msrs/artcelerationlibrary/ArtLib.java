@@ -196,8 +196,8 @@ public class ArtLib {
                     Log.e(TAG,"Motion Blur - Int Args is null");
                     return false;
                 }
-                if(int_Args[0] < 0  || int_Args[0] > 1 || int_Args[1] <0) {
-                    Log.e(TAG,"Motion Blur - Provide the radius greater than 0  and blur direction as 0 or 1");
+                if(int_Args[0] < 0  || int_Args[1] > 1 || int_Args[1] < 0) {
+                    Log.e(TAG,"Motion Blur - Provide the radius greater than 0 and blur direction as 0 or 1");
                     return false;
                 }
                 break;
