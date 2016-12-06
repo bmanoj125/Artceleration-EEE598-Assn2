@@ -1,6 +1,16 @@
-//
-// Created by Amit on 12/5/2016.
-//
+/*
+** This file contains the native code to perform Neon Edges Transform of an image. It showcases the lines detected in color.
+** Arguments:
+        bmp_info - The metadata about the bitmap of the image that needs to be transformed. Contains height and width and format information.
+        pixels   - The actual pixel data
+        float_array - arguments for the transform, the standard deviation is stored in index 0.
+                                                   the first scaling factor is stored in index 1.
+                                                   the second scaling factor is stores in index 2.
+
+   Return:
+        void
+   The function transforms the bitmap image in place. The output is a color image.
+*/
 
 #include <android/bitmap.h>
 #include <stdlib.h>
@@ -32,7 +42,7 @@ void Neon_Edges(AndroidBitmapInfo* bmp_info, void *pixels, float float_array[]) 
     float sigma[1];
     sigma[0]=std_dev;
 
-    int fitler[1]= {2};
+    int filter[1]= {2};
 
     //Point input_ptr to the row of pixels
     input_line = (uint32_t*)pixels;
@@ -42,7 +52,7 @@ void Neon_Edges(AndroidBitmapInfo* bmp_info, void *pixels, float float_array[]) 
     memcpy(copy1, input_line,sizeof(uint32_t)*total_height*total_width);
 
     //Compute the Sobel Edge Detection
-    Sobel_Filter(bmp_info,copy1,fitler);
+    Sobel_Filter(bmp_info,copy1,filter);
 
     //Apply Gaussian Blur to the Sobel Edge output
     Gaussian_Blur(bmp_info,copy1,radius,sigma);
@@ -55,9 +65,9 @@ void Neon_Edges(AndroidBitmapInfo* bmp_info, void *pixels, float float_array[]) 
 
             //Take the difference and Scale by the factor chosen. Add this value to the original image
             //We're using the intensity_limit function to limit it within 0 and 255
-            red = (((copy1[index] & 0x00FF0000) >> 16)*scale_1)+((input_line[index] & 0x00FF0000) >> 16)*scale_2;
-            green = ((copy1[index] & 0x0000FF00) >> 8)*scale_1+ ((input_line[index] & 0x0000FF00) >> 8)*scale_2;
-            blue = (copy1[index] & 0x000000FF)*scale_1+ ((input_line[index] & 0x000000FF))*scale_2;
+            red = (((copy1[index] & 0x00FF0000) >> 16)*scale_1)+(((input_line[index] & 0x00FF0000) >> 16)*scale_2);
+            green = (((copy1[index] & 0x0000FF00) >> 8)*scale_1)+ (((input_line[index] & 0x0000FF00) >> 8)*scale_2);
+            blue = ((copy1[index] & 0x000000FF)*scale_1) + (((input_line[index] & 0x000000FF))*scale_2);
 
             //Limit the intensities to within 0 and 255
             red = intensity_limit(red);

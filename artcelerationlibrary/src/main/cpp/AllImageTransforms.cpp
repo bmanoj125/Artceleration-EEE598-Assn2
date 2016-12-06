@@ -1,6 +1,12 @@
 //
 // Created by Amit on 12/4/2016.
 //
+/*
+This file contains the mappings required for NDK to compile and execute the native C code on the ART.
+It is the interface between java and C libraries. It contains one map function for each of the transforms.
+These transforms are Gaussian Blur, Motion Blur, Sobel Filter, Unsharp Mask and Neon Edges.
+*/
+
 
 #include <android/log.h>
 #include <android/bitmap.h>

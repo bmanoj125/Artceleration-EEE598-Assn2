@@ -111,9 +111,9 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                     for (int i = -1; i < 2; i++) {
                         for (int j = -1; j < 2; j++) {
                             //Skip the pixels that go out of range or where the mask is 0
-                            if (j == 0 || (y_iterator + i) < 0 ||
-                                (y_iterator + i >= total_height) || (x_iterator + j) < 0 ||
-                                (x_iterator + j) >= total_width) {
+                            if ((j == 0) || ((y_iterator + i) < 0) ||
+                                ((y_iterator + i) >= total_height) || ((x_iterator + j) < 0) ||
+                                ((x_iterator + j) >= total_width)) {
                                 continue;
                             }
                             sum_x += gray[((y_iterator + i) * total_width) + x_iterator + j] *
@@ -142,9 +142,9 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                     for (int i = -1; i < 2; i++) {
                         for (int j = -1; j < 2; j++) {
                             //Skip the pixels that go out of range or where the mask is 0
-                            if (i == 0 || (y_iterator + i) < 0 ||
-                                (y_iterator + i >= total_height) || (x_iterator + j) < 0 ||
-                                (x_iterator + j) >= total_width) {
+                            if (i == 0 || ((y_iterator + i) < 0) ||
+                                ((y_iterator + i) >= total_height) || ((x_iterator + j) < 0) ||
+                                ((x_iterator + j) >= total_width)) {
                                 continue;
                             }
                             sum_y += gray[((y_iterator + i) * total_width) + x_iterator + j] *
@@ -175,8 +175,8 @@ void Sobel_Filter(AndroidBitmapInfo* bmp_info, void *pixels, int integer_array[]
                     for (int i = -1; i < 2; i++) {
                         for (int j = -1; j < 2; j++) {
                             //Skip the pixels that go out of range or where the mask is 0
-                            if ((y_iterator + i) < 0 || (y_iterator + i >= total_height) ||
-                                (x_iterator + j) < 0 || (x_iterator + j) >= total_width) {
+                            if (((y_iterator + i) < 0) || ((y_iterator + i) >= total_height) ||
+                                ((x_iterator + j) < 0) || ((x_iterator + j) >= total_width)) {
                                 continue;
                             }
                             sum_y += gray[((y_iterator + i) * total_width) + x_iterator + j] *
