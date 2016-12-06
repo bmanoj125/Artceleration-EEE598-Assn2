@@ -82,7 +82,7 @@ public class ArtLib {
         TransformTest[] transforms = new TransformTest[5];
         transforms[0] = new TransformTest(0, new int[]{1,10}, new float[]{});
         transforms[1] = new TransformTest(1, new int[]{50}, new float[]{5.0f});
-        transforms[2] = new TransformTest(2, new int[]{0}, new float[]{});
+        transforms[2] = new TransformTest(2, new int[]{1}, new float[]{});
         transforms[3] =  new TransformTest(3, new int[]{}, new float[]{3f, 5f});
         transforms[4] = new TransformTest(4, new int[]{51, 42, 33}, new float[]{0.5f, 0.6f, 0.3f});
 
@@ -203,6 +203,10 @@ public class ArtLib {
                 break;
             case GAUSSIAN_BLUR :
                 //Check Arguments for Gaussian Blur
+                if(int_Args == null || float_Args==null){
+                    Log.e(TAG,"Gaussian Blur - Int or Float Args is null");
+                    return false;
+                }
                 if(int_Args[0]< 0  || float_Args[0] <0) {
                     Log.e(TAG, "Gaussian Blur - The radius and standard deviation should be greater than 0");
                     return false;
@@ -210,19 +214,32 @@ public class ArtLib {
                 break;
             case SOBEL_FILTER :
                 //Check Arguments for Sobel Filter
+                if(int_Args == null){
+                    Log.e(TAG,"Sobel Filter - Int Args is null");
+                    return false;
+                }
                 if(int_Args[0]< 0 ||int_Args[0]>2){
                     Log.e(TAG, "Sobel Filter - a0 should be within 0 and 2 inclusive.");
                     return false;
                 }
                 break;
             case UNSHARP_MASK :
-                // Call the Unsharp Mask transform
+                // Check the Arguments for Unsharp Mask transform
+                if(float_Args == null){
+                    Log.e(TAG,"Unsharp Mask - Float Args is null");
+                    return false;
+                }
                 if(float_Args[0]<0||float_Args[1]<0) {
                     Log.e(TAG, "Unsharp Mask - The scaling factor and standard deviation should be greater than 0");
                     return false;
                 }
                 break;
             case NEON_EDGES:
+                // Check the Arguments for Neon Edges
+                if(float_Args == null){
+                    Log.e(TAG,"Neon Edges - Float Args is null");
+                    return false;
+                }
                 if(float_Args[0]<0|| float_Args[1]<0 || float_Args[2]<0) {
                     Log.e(TAG, "Neon Edges - The scaling factors and standard deviation should be greater than 0");
                     return false;
