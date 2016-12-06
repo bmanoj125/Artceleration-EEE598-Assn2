@@ -141,10 +141,6 @@ public class TransformService extends Service {
                 case GAUSSIAN_BLUR :
                     // Call the Gaussian Blur transform
                     Log.i(TAG, "Perform Gaussian Blur");
-                    if(bmp==null|| intArgs==null || floatArgs==null){
-                        bmp = change_black(bmp);
-                        return;
-                    }
                     Gaussian_Blur(bmp, intArgs, floatArgs);
                     break;
                 case SOBEL_FILTER :
@@ -221,23 +217,6 @@ public class TransformService extends Service {
 
             }
         }
-
-    Bitmap change_black(Bitmap bmp){
-
-        int [] allpixels = new int [bmp.getHeight()*bmp.getWidth()];
-        bmp.getPixels(allpixels,0,bmp.getWidth(),0,0,bmp.getWidth(),bmp.getHeight());
-
-        //Manipulate all the background black pixels in the image to transparent by making the A value in ARGB to 0
-
-        for(int i = 0; i<allpixels.length;i++){
-            //if(allpixels[i] == Color.BLACK)
-                //For all black pixels, convert their opacity to 0
-                allpixels[i] =Color.RED;
-        }
-        bmp = Bitmap.createBitmap(allpixels,bmp.getWidth(),bmp.getHeight(), Bitmap.Config.ARGB_8888 );
-
-        return  bmp;
-    }
 
 
 }
