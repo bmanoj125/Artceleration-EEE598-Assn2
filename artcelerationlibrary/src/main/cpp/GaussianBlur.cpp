@@ -1,6 +1,16 @@
-//
-// Created by Amit on 12/4/2016.
-//
+/*
+** This file contains the native code to perform Gaussian Blurring of an image.
+** Arguments:
+        bmp_info - The metadata about the bitmap of the image that needs to be transformed. Contains height and width and format information.
+        pixels   - The actual pixel data
+        integer_array - argument for the gaussian blur, the radius of the blur
+        float_array - argument for the gaussian blur, the standard deviation of the blur.
+   Return:
+        void
+   The function transforms the bitmap image in place.
+
+**
+*/
 
 #include <jni.h>
 #include <time.h>
