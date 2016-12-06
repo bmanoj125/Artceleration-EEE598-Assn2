@@ -1,6 +1,16 @@
-//
-// Created by Amit on 12/5/2016.
-//
+/*
+** This file contains the native code to perform Unsharp Masking of an image. It makes the image sharper but less clearer.
+** Arguments:
+        bmp_info - The metadata about the bitmap of the image that needs to be transformed. Contains height and width and format information.
+        pixels   - The actual pixel data
+        float_array - arguments for the unsharp masking, the standard deviation of gaussian filter is stored in index 0 and scaling factor of mask is stored in index 1.
+
+   Return:
+        void
+   The function transforms the bitmap image in place.
+
+**
+*/
 
 #include <android/bitmap.h>
 #include <stdlib.h>
