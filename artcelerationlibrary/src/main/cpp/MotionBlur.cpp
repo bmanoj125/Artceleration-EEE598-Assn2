@@ -1,9 +1,9 @@
 /*
-** This file contains the native code to perform Gaussian Blurring of an image.
+** This file contains the native code to perform Motion Blurring of an image. Performs a vertical or horizontal blur for the given radius.
 ** Arguments:
         bmp_info - The metadata about the bitmap of the image that needs to be transformed. Contains height and width and format information.
         pixels   - The actual pixel data
-        integer_array - arguments for the gaussian blur, the direction of blur is stored in index 0 and radius of the blur is stored in index 1.
+        integer_array - arguments for the motion blur, the direction of blur is stored in index 0 and radius of the blur is stored in index 1.
 
    Return:
         void

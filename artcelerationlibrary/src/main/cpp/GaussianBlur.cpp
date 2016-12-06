@@ -1,5 +1,5 @@
 /*
-** This file contains the native code to perform Gaussian Blurring of an image.
+** This file contains the native code to perform Gaussian Blurring of an image. It blurs the image as if each pixel were a gaussian average of those around it.
 ** Arguments:
         bmp_info - The metadata about the bitmap of the image that needs to be transformed. Contains height and width and format information.
         pixels   - The actual pixel data
